@@ -1,0 +1,14 @@
+{% if listing %}
+<img src={{listing.image}}>
+<a href="{% url 'listing_view' listing.id %}">
+    <h3>{{listing.title}}</h3>
+</a>
+<div>{{listing.description}}</div>
+<div>Price:{{listing.price}}</div>
+<div>Highest Bid: {{listing.highest_bid}}</div>
+<div>Posted on: {{listing.uploaded}}</div>
+<div>Posted by: {{listing.user}}</div>
+{% if listing.category %}
+<div>Category: {{ listing.category.category }}</div>
+{% endif %}
+{% endif %}

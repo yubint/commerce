@@ -1,0 +1,13 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2><a href="{% url 'categories-view' %}">Categories</a>: {{ category }}</h2>
+{% if category_listing|length == 0 %}
+<p>Oops No listing of category {{ category }} found.</p>
+{% else %}
+{% for listing in category_listing %}
+{% include "auctions/includelisting.html" with data=listing %}
+{% endfor %}
+{% endif %}
+
+{% endblock %}

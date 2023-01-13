@@ -1,0 +1,21 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+<h2>My listing</h2>
+{% if listings %}
+{% for listing in listings %}
+<div id="listing" class="mb-3">
+    {% include 'auctions/includelisting.html' with data=listing %}
+</div>
+<form action="{% url 'delete-listing' listing.id %}" method="POST">
+    <button type="submit" class="btn btn-outline-dark">Delete</button>
+    {% csrf_token %}
+</form>
+{% endfor %}
+{% else %}
+<p>
+    Oops this page is lonely. <a href="{% url 'add-listing' %}">Create Listing</a> for them to appear in this page.
+</p>
+{% endif %}
+
+{% endblock %}

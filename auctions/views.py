@@ -1,14 +1,18 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import  HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
-from .models import User
+from .models import User, Bid, Comment, Listing, Category
+from . import utils
 
+CATEGORY = [x.category for x in Category.objects.all()]
 
 def index(request):
-    return render(request, "auctions/index.html")
+    listings = Listing.objects.all()
+    return render(request, "auctions/index.html", {'listings' : listings})
 
 
 def login_view(request):
@@ -61,3 +65,139 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+@login_required(login_url='login')
+def watchlist(request):
+    user_watchlist = request.user.watchlist.all()
+    return render(request, "auctions/watchlist.html", {
+        "watchlist": user_watchlist
+    })
+
+@login_required(login_url='login')
+def add_listing(request):
+    if request.method == "POST":
+        user = request.user
+        title = request.POST.get('title')
+        price = request.POST.get('price')
+        image = request.POST.get('image')
+        description = request.POST.get('description')
+        category_name = request.POST.get('category')
+        if category_name not in CATEGORY and category_name != 'None':
+            return render(request, "auctions/addlisting.html", {
+                'message': 'The category is not available'
+            })
+        try:
+            new_listing = Listing(title = title, price = float(price), image = image , description = description, user = user)
+            if category_name == 'None':
+                new_listing.save()
+            else:
+                new_listing.category= Category.objects.get(category=category_name)
+                new_listing.save()
+            return HttpResponseRedirect(reverse("my-listing"))
+        except IntegrityError:
+            return render(request, "auctions/addlisting.html", {
+                'message' : 'Error While adding the Listing. Please try again.'
+            })
+    return render(request, "auctions/addlisting.html", {
+        'categories': CATEGORY
+    })
+
+
+@login_required(login_url='login')
+def my_listing(request):
+    user = request.user
+    listings = Listing.objects.filter(user=user)
+    return render(request, "auctions/mylisting.html", {
+        "listings": listings
+    })
+
+def listing_view(request, listing_id):
+    listing = Listing.objects.get(pk = listing_id)
+    return render(request, "auctions/listing.html", {
+        'listing': listing
+    })
+
+@login_required(login_url='login')
+def bid(request, listing_id):
+    if request.method == "POST":
+        user = request.user
+        listing = Listing.objects.get(pk=listing_id)
+        try:
+            bid_value = int(request.POST.get('bid'))
+        except TypeError:
+            return utils.listing_error(request, listing, 'Error Bidding')
+        if listing.highest_bid is None:
+            if bid_value < listing.price:
+                return utils.listing_error(request, listing, "Your bid value is lower than the price")
+        else:
+            if bid_value < listing.highest_bid.value:
+                return utils.listing_error(request, listing, 'You bid value is lower than the highest value')
+        try:
+            new_bid = Bid(value=bid_value, listing=listing, user=user)
+            new_bid.save()
+            listing.highest_bid = new_bid
+            listing.save()
+        except IntegrityError:
+            return utils.listing_error(request,listing, "Error Bidding")
+        return HttpResponseRedirect(reverse('listing_view', args=[listing_id]))
+
+@login_required(login_url='login')
+def comment(request, listing_id):
+    if request.method == 'POST':
+        user = request.user
+        listing = Listing.objects.get(pk=listing_id)
+        comment_text = request.POST.get('comment') 
+        if not comment_text:
+            return utils.listing_error(request,listing, "Error Posting the comment")
+        try:
+            new_comment = Comment(comment=comment_text, listing=listing, user=user)
+            new_comment.save()
+        except IntegrityError:
+            return utils.listing_error(request, listing, "Error Posting the comment")
+        return HttpResponseRedirect(reverse('listing_view', args=[listing_id]))
+    else:
+        return HttpResponseRedirect(reverse('listing_view', args=[listing_id]))
+
+@login_required(login_url='login')
+def add_watchlist(request, listing_id):
+    if request.method == 'POST':
+        user = request.user
+        listing = Listing.objects.get(pk=listing_id)
+        listing.watchlisted_by.add(user)
+    return HttpResponseRedirect(reverse('listing_view', args=[listing_id]))
+
+@login_required(login_url='login')
+def remove_watchlist(request, listing_id):
+    if request.method == 'POST':
+        user = request.user
+        listing = Listing.objects.get(pk = listing_id)
+        listing.watchlisted_by.remove(user)
+    return HttpResponseRedirect(reverse('listing_view', args=[listing_id]))
+
+def categories_view(request):
+    return render(request, "auctions/categories_view.html", {
+        'categories': CATEGORY, 
+    })
+
+def categories(request, category_name):
+    category_listing = Category.objects.get(category=category_name).listing.all()
+    return render(request, "auctions/categories.html", {
+        'category': category_name,
+        'category_listing': category_listing,
+    })
+
+@login_required(login_url='login')
+def delete_listing(request, listing_id):
+    user = request.user
+    listing = Listing.objects.get(pk=listing_id)
+    if listing.user != user:
+        return utils.listing_error(request, listing, "You don't own this listing")
+    try:
+        listing.delete()
+    except IntegrityError:
+        return utils.listing_error(request,listing, "Error deleting this listing")
+    return HttpResponseRedirect(reverse('my-listing'))
+
+@login_required(login_url='login')
+def my_bid(request):
+    pass
