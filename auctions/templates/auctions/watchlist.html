@@ -1,13 +1,22 @@
 {% extends 'auctions/layout.html' %}
 
+{% block title %}
+Watchlist
+{% endblock %}
 {% block body %}
 <h2>Watchlist</h2>
 {% if watchlist|length == 0 %}
 <p>Oops you haven't added anything to the watchlist. You can browse the active listing <a
-        href="{% url 'index' %}">here.</a></p>
+                href="{% url 'index' %}">here.</a></p>
 {% else %}
 {% for listing in watchlist %}
 {% include 'auctions/includelisting.html' with data=listing %}
+<div>
+        <form action="{% url 'remove-watchlist' listing.id %}" method="POST">
+                <button type="submit" class="btn btn-outline-dark">Remove</button>
+                {% csrf_token %}
+        </form>
+</div>
 {% endfor %}
 {% endif %}
 {% endblock %}

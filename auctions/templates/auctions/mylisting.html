@@ -1,5 +1,9 @@
 {% extends 'auctions/layout.html' %}
 
+{% block title %}
+My listing
+{% endblock %}
+
 {% block body %}
 <h2>My listing</h2>
 {% if listings %}
@@ -7,10 +11,18 @@
 <div id="listing" class="mb-3">
     {% include 'auctions/includelisting.html' with data=listing %}
 </div>
-<form action="{% url 'delete-listing' listing.id %}" method="POST">
-    <button type="submit" class="btn btn-outline-dark">Delete</button>
-    {% csrf_token %}
-</form>
+<div>
+    <form action="{% url 'delete-listing' listing.id %}" method="POST">
+        <button type="submit" class="btn btn-outline-dark">Delete</button>
+        {% csrf_token %}
+    </form>
+    {% if not listing.closed %}
+    <form action="{% url 'close-listing' listing.id %}" method="POST">
+        <button class="btn btn-outline-dark" type="submit">Close</button>
+        {% csrf_token %}
+    </form>
+    {% endif %}
+</div>
 {% endfor %}
 {% else %}
 <p>

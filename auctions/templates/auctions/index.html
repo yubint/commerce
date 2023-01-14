@@ -3,6 +3,9 @@
 {% block body %}
 <h2>Active Listings</h2>
 {% for listing in listings %}
-{% include 'auctions/includelisting.html' with data=listing %}
+<div class="mb-5">
+    {% include 'auctions/includelisting.html' with data=listing %}
+</div>
+<hr>
 {% endfor %}
 {% endblock %}

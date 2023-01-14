@@ -1,11 +1,25 @@
 {% if listing %}
-<img src={{listing.image}}>
+<div class="image-div">
+    <img src={{listing.image}}>
+</div>
 <a href="{% url 'listing_view' listing.id %}">
-    <h3>{{listing.title}}</h3>
+    <h3 class="{% if listing.closed %} closed-listing {% endif %}">{{listing.title}}</h3>
 </a>
 <div>{{listing.description}}</div>
-<div>Price:{{listing.price}}</div>
-<div>Highest Bid: {{listing.highest_bid}}</div>
+<div>Price: $
+    {% if listing.highest_bid %}
+    {{ listing.highest_bid.value }}
+    {% else %}
+    {{listing.price}}
+    {% endif %}
+</div>
+{% if listing.closed and listing.highest_bid %}
+<div>Status: Closed</div>
+<div> Winner: {{ listing.highest_bid.user.username }}</div>
+{% elif listing.closed %}
+<div>Status: Closed</div>
+<div> Winner: None</div>
+{% endif %}
 <div>Posted on: {{listing.uploaded}}</div>
 <div>Posted by: {{listing.user}}</div>
 {% if listing.category %}

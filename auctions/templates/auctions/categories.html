@@ -1,5 +1,9 @@
 {% extends "auctions/layout.html" %}
 
+{% block title %}
+Category-{{category }}
+{% endblock %}
+
 {% block body %}
 <h2><a href="{% url 'categories-view' %}">Categories</a>: {{ category }}</h2>
 {% if category_listing|length == 0 %}

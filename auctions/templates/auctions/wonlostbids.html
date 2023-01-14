@@ -1,0 +1,15 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+<h2><a href="{% url 'my-bid' %}">My bids</a>/{{ status }} bids</h2>
+{% if listings|length == 0 %}
+<p>Oops You haven't {{ status }} any bids. You can bid by going to the <a href="{% url 'index' %}">Active listing.</a>
+</p>
+{% else %}
+{% for listing in listings %}
+<div>
+    {% include 'auctions/includelisting.html' with data=listing %}
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

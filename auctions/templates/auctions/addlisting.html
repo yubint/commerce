@@ -1,5 +1,9 @@
 {% extends 'auctions/layout.html' %}
 
+{% block title %}
+Add listing
+{% endblock %}
+
 {% block body %}
 <h2>Add Listing</h2>
 <form action="{% url 'add-listing' %}" method="post">

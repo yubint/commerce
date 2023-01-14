@@ -1,20 +1,41 @@
 {% extends 'auctions/layout.html' %}
 
+{% block title %}
+{{listing.title}}
+{% endblock %}
 {% block body %}
 
 <div class="listing">
     <h2>{{listing.title}}</h2>
-    {% if listing not in request.user.watchlist.all %}
-    <form action="{% url 'add-watchlist' listing.id %}" method="POST">
-        <button type="submit" class="btn btn-outline-dark">Add to Watchlist</button>
-        {% csrf_token %}
-    </form>
-    {% else %}
-    <form action="{% url 'remove-watchlist' listing.id %}" method="POST">
-        <button class="btn btn-outline-dark" type="submit">Remove from watchlist</button>
-        {% csrf_token %}
-    </form>
-    {% endif %}
+    <div>
+        {% if listing.closed %}
+        <div>Status: Closed</div>
+        {% if listing.highest_bid.user == request.user %}
+        <h3>You've won the listing</h3>
+        {% endif %}
+        {% endif %}
+        {% if listing not in request.user.watchlist.all and not listing.closed %}
+        <form action="{% url 'add-watchlist' listing.id %}" method="POST">
+            <button type="submit" class="btn btn-outline-dark">Add to Watchlist</button>
+            {% csrf_token %}
+        </form>
+        {% elif listing in request.user.watchlist.all %}
+        <form action="{% url 'remove-watchlist' listing.id %}" method="POST">
+            <button class="btn btn-outline-dark" type="submit">Remove from watchlist</button>
+            {% csrf_token %}
+        </form>
+        {% endif %}
+        {% if listing.user == request.user and not listing.closed%}
+        <form action="{% url 'close-listing' listing.id %}" method="POST">
+            <button class="btn btn-outline-dark" type="submit">Close listing</button>
+            {% csrf_token %}
+        </form>
+        <form action="{% url 'delete-listing' listing.id %}" method="POST">
+            <button class="btn btn-outline-dark" type="submit">Delete listing</button>
+            {% csrf_token %}
+        </form>
+        {% endif %}
+    </div>
     {% if listing.image %}
     <img src="{{ listing.image }}">
     {% endif %}
@@ -24,12 +45,16 @@
     </div>
     {% endif %}
     <div id="price">
-        Price: ${{listing.price}}
+        Price: $
+        {% if listing.highest_bid %}
+        {{ listing.highest_bid.value }}
+        {% else %}
+        {{ listing.price }}
+        {% endif %}
     </div>
-    {% if listing.highest_bid %}
-    <div id="highest_bid">
-        Highest Bid: ${{listing.highest_bid.value}}
-    </div>
+    {% if listing.closed %}
+    <div>Winner: {{listing.highest_bid.user.username}}</div>
+    {% elif listing.highest_bid %}
     <div id="highest_bidder">
         {% if listing.highest_bid.user == request.user %}
         Made By: You
@@ -42,9 +67,10 @@
         No Bids
     </div>
     {% endif %}
-    {% if listing.user != request.user %}
+    {% if listing.user != request.user and not listing.closed %}
     <form action="{% url 'bid' listing.id %}" method="post">
-        <input type="number" name="bid" min="{{ listing.highest_bid.value }}" placeholder="Your Bid">
+        <input class="form-control mb-2" type="number" name="bid" min="{{ listing.highest_bid.value }}"
+            placeholder="Your Bid">
         <button class="btn btn-outline-dark" type="submit">Bid</button>
         {% csrf_token %}
     </form>

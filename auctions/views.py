@@ -11,7 +11,7 @@ from . import utils
 CATEGORY = [x.category for x in Category.objects.all()]
 
 def index(request):
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(closed=False)
     return render(request, "auctions/index.html", {'listings' : listings})
 
 
@@ -200,4 +200,49 @@ def delete_listing(request, listing_id):
 
 @login_required(login_url='login')
 def my_bid(request):
-    pass
+    user = request.user
+    bids = user.bids.all()
+    # creating a list of tuples containing listing and bids for easy access of data
+    listing_bid = []
+    for bid in bids:
+        listing = bid.listing
+        listing_bid.append((listing, bid))
+    print(listing_bid)
+    return render(request, "auctions/mybid.html", {
+        'listing_bid': listing_bid, 
+    })
+
+@login_required(login_url='login')
+def close_listing(request, listing_id):
+    if request.method == 'POST':
+        print('hi')
+        user = request.user
+        listing = Listing.objects.get(pk=listing_id)
+        if listing.user != user:
+            return utils.listing_error(request, listing, "You don't own the listing")
+        try:
+            listing.closed = True
+            listing.save()
+        except IntegrityError:
+            return utils.listing_error(request, listing, "Error closing the listing")
+    
+    return HttpResponseRedirect(reverse('my-listing'))
+
+@login_required(login_url='login')
+def won_bids(request):
+    user = request.user
+    # filters listing that are closed and the highest bidder is the user. '__' is used to get attribute of the user
+    listings = Listing.objects.filter(closed= True).filter(highest_bid__user = user)
+    return render(request, 'auctions/wonlostbids.html', {
+        'listings': listings,
+        'status': 'Won',
+    })
+
+@login_required(login_url='login')
+def lost_bids(request):
+    user = request.user
+    listings = Listing.objects.filter(closed=True).exclude(highest_bid__user= user)
+    return render(request, 'auctions/wonlostbids.html', {
+        'listings':listings,
+        'status': 'Lost',
+    })
