@@ -11,6 +11,7 @@ Category-{{category }}
 {% else %}
 {% for listing in category_listing %}
 {% include "auctions/includelisting.html" with data=listing %}
+<hr>
 {% endfor %}
 {% endif %}
 

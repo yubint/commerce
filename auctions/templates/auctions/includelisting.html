@@ -1,28 +1,36 @@
 {% if listing %}
-<div class="image-div">
-    <img src={{listing.image}}>
+<div class="listing-preview-container">
+    <div class="preview-left-container">
+        <img src={{listing.image}} class="listing-preview-image" alt="Picture of listing">
+    </div>
+    <div class="preview-right-container">
+        <div>
+            <a href="{% url 'listing_view' listing.id %}">
+                <h3 class="{% if listing.closed %} closed-listing {% endif %}">{{listing.title}}</h3>
+            </a>
+            <div>{{listing.description}}</div>
+            <div>Price: $
+                {% if listing.highest_bid %}
+                {{ listing.highest_bid.value }}
+                {% else %}
+                {{listing.price}}
+                {% endif %}
+            </div>
+            {% if listing.closed and listing.highest_bid %}
+            <div>Status: Closed</div>
+            <div> Winner: {{ listing.highest_bid.user.username }}</div>
+            {% elif listing.closed %}
+            <div>Status: Closed</div>
+            <div> Winner: None</div>
+            {% endif %}
+            <div>Posted on: {{listing.uploaded}}</div>
+            <div>Posted by: {{listing.user}}</div>
+            {% if listing.category %}
+            Category:
+            <a href="{% url 'categories' listing.category.category %}">
+                {{listing.category.category}}</a>
+            {% endif %}
+        </div>
+    </div>
 </div>
-<a href="{% url 'listing_view' listing.id %}">
-    <h3 class="{% if listing.closed %} closed-listing {% endif %}">{{listing.title}}</h3>
-</a>
-<div>{{listing.description}}</div>
-<div>Price: $
-    {% if listing.highest_bid %}
-    {{ listing.highest_bid.value }}
-    {% else %}
-    {{listing.price}}
-    {% endif %}
-</div>
-{% if listing.closed and listing.highest_bid %}
-<div>Status: Closed</div>
-<div> Winner: {{ listing.highest_bid.user.username }}</div>
-{% elif listing.closed %}
-<div>Status: Closed</div>
-<div> Winner: None</div>
-{% endif %}
-<div>Posted on: {{listing.uploaded}}</div>
-<div>Posted by: {{listing.user}}</div>
-{% if listing.category %}
-<div>Category: {{ listing.category.category }}</div>
-{% endif %}
 {% endif %}

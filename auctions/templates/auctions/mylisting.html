@@ -11,7 +11,7 @@ My listing
 <div id="listing" class="mb-3">
     {% include 'auctions/includelisting.html' with data=listing %}
 </div>
-<div>
+<div class="button-container ml-30p">
     <form action="{% url 'delete-listing' listing.id %}" method="POST">
         <button type="submit" class="btn btn-outline-dark">Delete</button>
         {% csrf_token %}
@@ -23,6 +23,7 @@ My listing
     </form>
     {% endif %}
 </div>
+<hr>
 {% endfor %}
 {% else %}
 <p>

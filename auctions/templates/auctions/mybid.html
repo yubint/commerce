@@ -25,10 +25,13 @@ My bid
         </li>
     </ul>
 </div>
+<hr>
+<h2>All Bids</h2>
 <div>
     {% include 'auctions/includelisting.html' with data=listing %}
-    <div>Your bid: {{ bid.value }}</div>
+    <div class="your-bid">Your bid: $ {{ bid.value }}</div>
 </div>
+<hr>
 {% endfor %}
 {% endif %}
 

@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h2>Active Listings</h2>
+<h2 class="mb-3">Active Listings</h2>
 {% for listing in listings %}
 <div class="mb-5">
     {% include 'auctions/includelisting.html' with data=listing %}

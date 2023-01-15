@@ -11,12 +11,13 @@ Watchlist
 {% else %}
 {% for listing in watchlist %}
 {% include 'auctions/includelisting.html' with data=listing %}
-<div>
+<div class="mt-3 ml-30p">
         <form action="{% url 'remove-watchlist' listing.id %}" method="POST">
                 <button type="submit" class="btn btn-outline-dark">Remove</button>
                 {% csrf_token %}
         </form>
 </div>
+<hr>
 {% endfor %}
 {% endif %}
 {% endblock %}

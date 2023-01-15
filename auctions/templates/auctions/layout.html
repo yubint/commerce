@@ -4,58 +4,60 @@
 <html lang="en">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Auctions{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:wght@400;700;800&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
-    <h1>Auctions</h1>
-    <div>
-        {% if user.is_authenticated %}
-        Signed in as <strong>{{ user.username }}</strong>.
-        {% else %}
-        Not signed in.
-        {% endif %}
+    <h1 id="app-name">auctions</h1>
+    <div id="nav-container">
+        <div id="nav-left-container">
+            <div class="nav-div">
+                <a class="navbar-link" id="active-listing" href="{% url 'index' %}">active listing</a>
+            </div>
+            <div class="nav-div">
+                <a href="{% url 'categories-view' %}" class="navbar-link" id="categories">categories</a>
+            </div>
+            {% if user.is_authenticated %}
+            <div class="nav-div">
+                <a href="{% url 'watchlist' %}" class="navbar-link"
+                    id="watchlist">watchlist[{{user.watchlist.all.count}}]</a>
+            </div>
+            <div class="nav-div">
+                <a href="{% url 'add-listing' %}" class="navbar-link" id="add-listing">add listing</a>
+            </div>
+            <div class="nav-div">
+                <a href="{% url 'my-listing' %}" class="navbar-link" id="my-listing">my listing </a>
+            </div>
+            <div class="nav-div">
+                <a href="{% url 'my-bid' %}" class="navbar-link" id="my-bids">my bids</a>
+            </div>
+            {% endif %}
+        </div>
+        <div id="nav-right-container">
+            {% if user.is_authenticated %}
+            <div class="nav-div"><span id="username">{{ user.username }}</span></div>
+            <div class="nav-div">
+                <a href="{% url 'logout' %}" class="navbar-link" id="logout">logout
+                </a>
+            </div>
+            {% else %}
+            <div class="nav-div">
+                <a href="{% url 'login' %}" class="navbar-link" id="login">login</a>
+            </div>
+            <div class="nav-div">
+                <a href="{% url 'register' %}" class="navbar-link" id="register">register</a>
+            </div>
+            {% endif %}
+        </div>
     </div>
-    <ul class="nav">
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-        </li>
-        {% if user.is_authenticated %}
-        <li class-"nav-item">
-            <a class="nav-link" href="{% url 'watchlist' %}">Watchlist<span>[{{user.watchlist.all.count}}]</span></a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'add-listing' %}">Add Listing</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'my-listing' %}">My listing</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'categories-view' %}">Categories</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'my-bid' %}">My bids</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Log In</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">Register</a>
-        </li>
-        {% endif %}
-    </ul>
-    {% if message %}
-    <div>
-        {{message}}
-    </div>
-    {% endif %}
     <hr>
     {% block body %}
     {% endblock %}
