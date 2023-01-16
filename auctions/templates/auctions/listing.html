@@ -3,6 +3,10 @@
 {% block title %}
 {{listing.title}}
 {% endblock %}
+
+
+
+
 {% block body %}
 
 <div class="listing">
@@ -38,20 +42,36 @@
             {% endif %}
         </div>
     </div>
-    {% if listing.image %}
-    <img src="{{ listing.image }}">
-    {% endif %}
+    <div id="image-container" style="background: url({{ listing.image }});
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;">
+        {% if listing in request.user.watchlist.all %}
+        <div id="watchlist-indicator">
+            watchlist
+        </div>
+        {% endif %}
+    </div>
     {% if listing.description %}
-    <div id="description">
+    <div id="description" class="description-multiline">
         {{listing.description}}
     </div>
     {% endif %}
+    <hr>
     <div id="price">
         Price: $
         {% if listing.highest_bid %}
         {{ listing.highest_bid.value }} ({{ listing.bids.all.count }} bids made)
         {% else %}
         {{ listing.price }}
+        {% endif %}
+    </div>
+    <div>
+        Category:
+        {% if listing.category %}
+        {{listing.category.category }}
+        {% else %}
+        None
         {% endif %}
     </div>
     {% if listing.closed and listing.highest_bid %}
@@ -78,16 +98,18 @@
         {% csrf_token %}
     </form>
     {% endif %}
+    <hr>
     <h3>Comments</h3>
     <form action="{% url 'comment' listing.id %}" method="post">
-        <input class="form-control mb-2" type="text" name="comment" autocomplete="off" placeholder="Comment">
+        <textarea name="comment" id="" cols="30" rows="2" class="comment-input form-control mb-2"
+            onkeyup="if (this.scrollHeight > this.clientHeight) this.style.height =`${this.scrollHeight}px`;"></textarea>
         <button class="btn btn-outline-dark" type="submit">Comment</button>
         {% csrf_token %}
     </form>
     {% for comment in listing.comments.all %}
     <hr>
     <h4>{{ comment.user.username }}</h4>
-    <p>
+    <p class="comment">
         {{ comment.comment }}
     </p>
     <div>

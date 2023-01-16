@@ -13,10 +13,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:wght@400;700;800&display=swap"
         rel="stylesheet">
+
+    {% block style %}
+    {% endblock %}
 </head>
 
 <body>
-    <h1 id="app-name">auctions</h1>
+    <h1 id="app-name"><a href="{% url 'index' %}">auctions</a></h1>
     <div id="nav-container">
         <div id="nav-left-container">
             <div class="nav-div">
@@ -27,8 +30,8 @@
             </div>
             {% if user.is_authenticated %}
             <div class="nav-div">
-                <a href="{% url 'watchlist' %}" class="navbar-link"
-                    id="watchlist">watchlist[{{user.watchlist.all.count}}]</a>
+                <a href="{% url 'watchlist' %}" class="navbar-link" id="watchlist">watchlist <span
+                        id="watchlist-number">{{user.watchlist.all.count}}</span></a>
             </div>
             <div class="nav-div">
                 <a href="{% url 'add-listing' %}" class="navbar-link" id="add-listing">add listing</a>

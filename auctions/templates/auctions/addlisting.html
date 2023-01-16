@@ -5,25 +5,31 @@ Add listing
 {% endblock %}
 
 {% block body %}
-<h2>Add Listing</h2>
-<form action="{% url 'add-listing' %}" method="post">
-    <input class="form-control mb-1" type="text" name="title" id="listing-title" placeholder="Title" autocomplete="off"
-        required>
-    <input class="form-control mb-1" type="text" name="description" id="listing-description" placeholder="Description"
-        autocomplete="off">
-    <label for="listing-price">$</label>
-    <input class="form-control mb-1" type="number" name="price" id="listing-price" placeholder="Price" min="1" required>
-    <input class="form-control mb-1" type="url" name="image" id="listing-image" placeholder="Image Url">
-    <label for="category">Category</label>
-    <select name="category" id="category">
-        <option value="None" selected>None</option>
-        {% for category in categories %}
-        <option value="{{category}}">{{category}}</option>
-        {% endfor %}
-    </select>
-    {% csrf_token %}
-    <button class="btn btn-outline-dark" type="submit">Create Listing</button>
-
-</form>
+<div id="add-listing-container">
+    <h2>Add Listing</h2>
+    <form action="{% url 'add-listing' %}" method="post" id="add-listing-form">
+        <input class="form-control mb-1" type="text" name="title" id="listing-title" placeholder="Title"
+            autocomplete="off" required>
+        <textarea class="form-control mb-1" name="description" id="listing-description" cols="30" rows="2"
+            onkeyup="if (this.scrollHeight > this.clientHeight) this.style.height = `${this.scrollHeight}px`;"></textarea>
+        <div id="price-input-div">
+            <label for="listing-price">$</label>
+            <input class="form-control mb-1" type="number" name="price" id="listing-price" placeholder="Price" min="1"
+                required>
+        </div>
+        <input class="form-control mb-1" type="url" name="image" id="listing-image" placeholder="Image Url">
+        <div id="category-input-div">
+            <label for="category">Category</label>
+            <select class="form-control" name="category" id="category" form="add-listing-form">
+                <option value="None" selected>None</option>
+                {% for category in categories %}
+                <option value="{{category}}">{{category}}</option>
+                {% endfor %}
+            </select>
+            {% csrf_token %}
+        </div>
+    </form>
+    <button class="btn btn-outline-dark mt-2" type="submit" form="add-listing-form">Create Listing</button>
+</div>
 
 {% endblock %}

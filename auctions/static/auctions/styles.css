@@ -132,3 +132,69 @@ a:hover {
 .ml-30p {
     margin-left: 30%;
 }
+
+#listing-price {
+    display: inline-block;
+}
+
+#listing-description,
+.comment-input {
+    resize: none;
+    overflow: hidden;
+    transition: height 0.2s ease-out;
+}
+
+.comment {
+    white-space: pre-line;
+}
+
+.description-multiline {
+    white-space: pre-line;
+}
+
+#login-container,
+#register-container,
+#add-listing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#login-input-form,
+#register-input-form {
+    width: 20%;
+}
+
+#add-listing-form {
+    width: 40%;
+}
+
+#price-input-div,
+#category-input-div {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+#image-container {
+    aspect-ratio: 6/1;
+}
+
+#watchlist-indicator {
+    position: relative;
+    display: inline;
+    top: 0;
+    left: 0;
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.2rem 0.1rem 0.2rem;
+    background-color: #888;
+}
+
+#watchlist-number {
+    border-radius: 0.2rem;
+    background-color: #888;
+}
+
+#price {
+    font-size: 1.25rem;
+}
